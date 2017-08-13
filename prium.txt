@@ -1,0 +1,26 @@
+
+int prim()
+{
+	int i, j, pos, min, result = 0,cnt=0;
+	memset(visited, 0, sizeof(visited));
+	visited[1] = 1; pos = 1;
+	for (i = 1; i <= n; i++)
+		if (i != pos)low[i] = map1[pos][i]; 
+	for (i = 1; i<n; i++)
+	{
+		min = INF;
+		for (j = 1; j <= n; j++)
+			if (visited[j] == 0 && min>low[j])
+			{
+				min = low[j]; pos = j;
+			}
+		result += min;
+		visited[pos] = 1;
+		for (j = 1; j <= n; j++)
+			if (visited[j] == 0 && low[j] > map1[pos][j]){
+				low[j] = map1[pos][j];
+			}
+
+	}
+	return result;
+}

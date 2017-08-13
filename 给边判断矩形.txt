@@ -1,0 +1,82 @@
+#include<cstdio>
+#include<iostream>
+#include<cmath>
+#include<stack>
+#include<algorithm>
+#include<string>
+#include<cstring>
+#include<vector>
+#include<queue>
+#include <functional>
+#include<map>
+#include<iomanip>
+#include<set>
+#include <utility>
+#include<queue>
+#define ll long long
+#define maxn 100000+10
+const ll mod = 1000000007;
+const double pi = acos(-1);
+const double eps = 1e-9;
+const int inf = 1e9;
+using namespace std;
+struct Point
+{
+	int x;
+	int y;
+	bool operator<(const Point& p2)const
+	{
+		//优先判断横坐标  
+		if (x<p2.x || (x == p2.x&&y<p2.y))
+			return true;
+		return false;
+	}
+	bool operator==(const Point& p2) const
+	{
+		return (x == p2.x&&y == p2.y);
+	}
+};
+struct Line
+{
+	Point p1;
+	Point p2;
+};
+bool JudgePoint(Line *L)
+{
+	set<Point> S;
+	for (int i = 0; i<4; ++i)
+	{
+		S.insert(L[i].p1);
+		S.insert(L[i].p2);
+	}
+	return (S.size() == 4);
+}
+bool JudgeRect(Line *L)
+{
+	for (int i = 1; i<4; ++i)
+	{
+		//判断是不是垂直  
+		if ((L[0].p1.y - L[0].p2.y)*(L[i].p1.y - L[i].p2.y) == -(L[0].p1.x - L[0].p2.x)*(L[i].p1.x - L[i].p2.x))
+			continue;
+		//判断是不是平行  
+		if ((L[0].p1.y - L[0].p2.y)*(L[i].p1.x - L[i].p2.x) == (L[0].p1.x - L[0].p2.x)*(L[i].p1.y - L[i].p2.y))
+			continue;
+		return false;
+	}
+	return true;
+}
+int main()
+{
+	int t;
+	Line l[5];
+	scanf("%d", &t);
+	while (t--)
+	{
+		for (int i = 0; i < 4; i++)scanf("%d %d %d %d", &l[i].p1.x, &l[i].p1.y, &l[i].p2.x, &l[i].p2.y);
+		if (!JudgePoint(l)) { printf("NO\n"); continue; }
+		if(!JudgeRect(l)) { printf("NO\n"); continue; }
+		printf("YES\n");
+	}
+	return 0;
+
+}

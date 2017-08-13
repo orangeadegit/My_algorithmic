@@ -1,0 +1,11 @@
+ll Pow(ll a,ll b,ll mod)  
+{  
+    ll ret = 1;  
+    ll A = a;  
+    while(b){  
+        if(b&1) ret = A*ret%mod;  
+        A = A*A%mod;  
+        b >>= 1;  
+    }  
+    return ret;  
+}  

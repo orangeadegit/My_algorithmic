@@ -1,0 +1,57 @@
+#include<cstdio>
+#include<iostream>
+#include<cmath>
+#include<stack>
+#include<algorithm>
+#include<string>
+#include<cstring>
+#include<vector>
+#include<queue>
+#include <functional>
+#include<map>
+#include<iomanip>
+#include<set>
+#include <utility>
+#define ll long long
+#define maxn 1000000+10
+const ll mod = 1000000007;
+const double pi = acos(-1);
+const double eps = 1e-9;
+const int inf = 1e9;
+using namespace std;
+char mo[maxn], str[maxn];
+int ne[maxn];
+int t, len, l, r, ans;
+int main()
+{
+	scanf("%d", &t);
+	while (t--)
+	{
+		scanf("%s %s", mo, str);
+		len = strlen(mo);
+		int l = -1, r = 0;
+		ne[0] = -1;
+		while (r<len)
+		{
+			if (l == -1 || mo[r] == mo[l])
+			{
+				++l, ++r;
+				if (mo[r] != mo[l])ne[r] = l;
+				else ne[r] = ne[l];
+			}
+			else
+				l = ne[l];
+		}
+		int len1 = strlen(str);
+		ans = l = r = 0;
+		while (r<=len1 - 1)
+		{
+			if (l == -1 || mo[l] == str[r])l++, r++;
+			else l = ne[l];
+			if (len== l)ans++;
+		}
+		printf("%d\n", ans);
+	}
+	//system("pause");
+	return 0;
+}

@@ -1,0 +1,120 @@
+#include<iostream>
+#include<cstdio>
+#include<list>
+#include<algorithm>
+#include<cstring>
+#include<string>
+#include<queue>
+#include<stack>
+#include<map>
+#include<vector>
+#include<cmath>
+#include<set>
+#define ll long long
+using namespace std;
+
+#define N 200
+int g[N][N],a[N],vis[N],ok;
+struct point
+{
+	int x,y,va;
+	point(int _x,int _y, int _va) :x(_x),y(_y) ,va(_va){}
+	point(){}
+	bool operator <(const point &x1)const
+	{
+		if (this->va != x1.va)
+			return this->va < x1.va;
+		if (this->x != x1.x)
+			return this->x < x1.x;
+		return this->y < x1.y;
+	}
+};
+struct Answer
+{
+	int xx, yy;
+	Answer(int _xx, int _yy) :xx(_xx), yy(_yy){}
+	Answer(){}
+	bool operator < (const Answer &x1)const
+	{
+		if (this->xx != x1.xx)
+			return this->xx < x1.xx;
+		return this->yy < x1.yy;
+	}
+};
+vector<point>eg;
+set<Answer>ans;
+int find(int x)
+{
+	return x == a[x] ? x : a[x] = find(a[x]);
+}
+void unio(int x, int y)
+{
+	x = find(x);
+	y = find(y);
+	if (a[x] != y)
+		a[x] = y;
+}
+inline bool judge_same(int x, int y)
+{
+	return find(x) == find(y);
+}
+void kruskal(int n)
+{
+	for (int i = 1; i <= n; i++)
+		a[i] = i;
+	for (int i = 0; i < eg.size(); i++)
+	{
+		if (!judge_same(eg[i].x, eg[i].y))
+		{
+			ok++;
+			unio(eg[i].x, eg[i].y);
+			ans.insert(Answer(eg[i].x, eg[i].y));
+		}
+	}
+}
+int main()
+{
+#ifdef CDZSC
+	freopen("i.txt", "r", stdin);
+#endif
+	int t, n,x;
+	scanf("%d", &t);
+	while (t--)
+	{
+		ok = 0;
+		ans.clear();
+		eg.clear();
+		scanf("%d", &n);
+		for (int i = 1; i <= n; i++)
+		{
+			for (int j = 1; j <= n; j++)
+			{
+				scanf("%d", &x);
+				if (x == 0)continue;
+				else
+					eg.push_back(point(i, j, x));
+			}
+		}
+		sort(eg.begin(), eg.end());
+		kruskal(n);
+		if (ok==n-1)
+		{
+			int f = 1;
+			set<Answer>::iterator it;
+			for (it = ans.begin(); it != ans.end(); it++)
+			{
+				if (f)
+				{
+					f = 0;
+					printf("%d %d", (*it).xx, (*it).yy);
+				}
+				else
+					printf(" %d %d", (*it).xx, (*it).yy);
+			}
+			puts("");
+		}
+		else
+			puts("-1");
+	}
+	return 0;
+}

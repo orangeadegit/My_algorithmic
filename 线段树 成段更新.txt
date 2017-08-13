@@ -1,0 +1,104 @@
+#include<cstdio>
+#include<iostream>
+#include<cmath>
+#include<stack>
+#include<algorithm>
+#include<string>
+#include<cstring>
+#include<vector>
+#include<queue>
+#include <functional>
+#include<map>
+#include<iomanip>
+#include<set>
+#include <utility>
+#include<queue>
+#include<bitset>
+#define ll long long
+#define maxn 5500
+#define lson l , m , rt << 1
+#define rson m + 1 , r , rt << 1 | 1
+const ll mod = 1000000007;
+const double pi = acos(-1);
+const double eps = 1e-9;
+const int inf = 1e9;
+using namespace std;
+int sum[maxn << 2], lazy[maxn << 2], dp[maxn], a[102][maxn], t[102][maxn];
+void PushUp(int rt) {
+	sum[rt] = min(sum[rt << 1], sum[rt << 1 | 1]);
+}
+void PushDown(int rt, int m)
+{
+	if (lazy[rt] != inf) {
+		lazy[rt << 1] = min(lazy[rt << 1], lazy[rt]);
+		lazy[rt << 1 | 1] = min(lazy[rt << 1 | 1], lazy[rt]);
+		sum[rt << 1] = min(sum[rt << 1], lazy[rt]);
+		sum[rt << 1 | 1] = min(sum[rt << 1|1], lazy[rt]);
+		lazy[rt] = inf;
+	}
+}
+void build(int l, int r, int rt) {
+	lazy[rt] = inf;
+	sum[rt] = inf;
+	if (l == r) return;
+	int m = (l + r) >> 1;
+	build(lson);
+	build(rson);
+	PushUp(rt);
+}
+void update(int L, int R, int c, int l, int r, int rt) {
+	if (L <= l && r <= R) {
+		lazy[rt] = min(lazy[rt], c);
+		sum[rt] = min(sum[rt], c);
+		return;
+	}
+	if (lazy[rt] != inf)PushDown(rt, r - l + 1);
+	int m = (l + r) >> 1;
+	if (L <= m) update(L, R, c, lson);
+	if (R > m) update(L, R, c, rson);
+	PushUp(rt);
+}
+int query(int L, int R, int l, int r, int rt)
+{
+	if (L <= l&&R >= r)
+		return sum[rt];
+	if (lazy[rt] != inf)PushDown(rt, r - l + 1);
+	int m = l + r >> 1;
+	if (L>m)
+		return query(L, R, rson);
+	else if (R <= m)
+		return query(L, R, lson);
+	else
+		return min(query(L, R, lson), query(L, R, rson));
+}
+int main()
+{
+	int n, m, l, r;
+	while (~scanf("%d%d", &n, &m), n)
+	{
+		for (int i = 1; i <= n; i++)for (int j = 1; j <= m; j++)scanf("%d", &a[i][j]);
+		for (int i = 1; i <= n; i++)for (int j = 1; j <= m; j++)scanf("%d", &t[i][j]);
+		for (int i = 1; i <= m; i++)dp[i] = a[1][i];
+		for (int i = 2; i <= n; i++)
+		{
+			build(1, m, 1);
+			for (int j = 1; j <= m; j++)
+			{
+				l = max(1, j - t[i - 1][j]);
+				r = min(m, j + t[i - 1][j]);
+				update(l, r, dp[j], 1, m, 1);
+			}
+			for (int j = 1; j <= m; j++)
+			{
+				l = max(1, j - t[i][j]);
+				r = min(m, j + t[i][j]);
+				dp[j] = query(l, r, 1, m, 1) + a[i][j];
+			}
+		}
+		int ans = inf;
+		for (int i = 1; i <= m; i++)
+			ans = min(ans, dp[i]);
+		printf("%d\n", ans);
+	}
+	return 0;
+}

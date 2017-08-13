@@ -1,0 +1,113 @@
+/* 
+   功能Function Description:        NYOJ-305
+   开发环境Environment:                DEV C++ 4.9.9.1
+   技术特点Technique:
+   版本Version:
+   作者Author:                        可笑痴狂
+   日期Date:                        20120803
+   备注Notes:                       另类表达式求值，也是栈的应用
+*/
+
+//代码一：
+#include<cstdio>
+#include<cstring>
+#include<stack>
+#include<cctype>
+using namespace std;
+char str[310];
+
+int cal()
+{
+    int a,b;
+    stack<char> Optr;
+    stack<int> Opnd;
+    int len=strlen(str);
+    for(int i=0;i<len;)
+    {
+        if(isalpha(str[i]))       //读取到字母
+        {
+            Optr.push(str[i+1]);//通过第二个字符就可以区别如何操作
+            i+=4;   //把'('也跳过了
+        }
+        else if(isdigit(str[i]))  //读取到数字
+        {
+            a=b=0;
+            while(isdigit(str[i])) 
+            {
+                a=a*10+str[i]-'0';
+                ++i;
+            }
+            Opnd.push(a);        //运算数进栈
+        }
+        else if(str[i]==')')    //每当遇到')'就计算一次
+        {
+            a=Opnd.top();
+            Opnd.pop();
+            b=Opnd.top();
+            Opnd.pop();
+            switch(Optr.top())
+            {
+                case 'd':
+                    Opnd.push(a+b);
+                    ++i;
+                    break;
+                case 'a':
+                    Opnd.push(a>b?a:b);
+                    ++i;
+                    break;
+                default:
+                    Opnd.push(a<b?a:b);
+                    ++i;
+                    break;
+            }
+            Optr.pop();
+        }
+        else            //逗号跳过
+            ++i;
+    }
+    return Opnd.top();
+}
+
+int main()
+{
+    int n;
+    scanf("%d",&n);
+    while(n--)
+    {
+        scanf("%s",str);
+        printf("%d\n",cal());
+    }
+    return 0;
+}
+
+//代码二：----(系统的最优代码)---再次泪奔 
+
+#include<cstdio>
+#include<iostream>
+using namespace std;
+char str[1000];
+int start;
+int val()
+{
+    int v,n;
+    switch(str[start])
+    {
+    case 'm':start+=3;if(str[start-2]=='i') return min(val(),val());else return max(val(),val());
+    case 'a':start+=3;return val()+val();
+    case ')':
+    case '(':
+    case ',':++start;return val();
+    default:sscanf(str+start,"%d%n",&v,&n);start+=n;return v;
+    }
+}
+int main()
+{
+    int n;
+    scanf("%d",&n);
+    while(n--)
+    {
+        scanf("%s",str);
+        start=0;
+        printf("%d\n",val());
+    }
+}

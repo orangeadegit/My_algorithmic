@@ -1,0 +1,16 @@
+int exgcd(int a, int b, int &x, int &y)
+{
+	if (a == 0)
+	{
+		x = 0; y = 1;
+		return b;
+	}
+	else
+	{
+		int tx, ty;
+		int d = exgcd(b%a, a, tx, ty);
+		x = ty - (b / a)*tx;
+		y = tx;
+		return d;
+	}
+}

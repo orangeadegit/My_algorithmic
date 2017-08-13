@@ -1,0 +1,5 @@
+for (int i = 1; i <= n; i++){
+			scanf_s("%d", &a);
+			dp[i] = dp[i - 1] + (i-ha[a])*a;
+			ha[a] = i;
+		}

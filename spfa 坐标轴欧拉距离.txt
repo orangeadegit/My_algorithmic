@@ -1,0 +1,95 @@
+#include<cstdio>
+#include<iostream>
+#include<cmath>
+#include<stack>
+#include<algorithm>
+#include<string>
+#include<cstring>
+#include<vector>
+#include<queue>
+#include <functional>
+#include<map>
+#include<iomanip>
+#include<set>
+#include <utility>
+#include<queue>
+#include<bitset>
+#include <numeric>
+#define ll long long
+#define maxn 200001
+#define lson l , m , rt << 1
+#define rson m + 1 , r , rt << 1 | 1
+const int mod = 142857;
+const double pi = acos(-1);
+const double eps = 0.1;
+const int inf = 100000000;
+using namespace std;
+int n, head[maxn], edgenum,dist[maxn];
+struct node
+{
+	int x, y, id;
+}N[maxn];
+struct edge
+{
+	int to, v, next;
+}e[maxn*10];
+bool vis[maxn];
+void addedge(int u, int v, int w)
+{
+	edge E = { v,w,head[u] };
+	e[edgenum] = E;
+	head[u] = edgenum++;
+}
+bool spfa()
+{
+   
+	for (int i = 0; i < maxn; i++)dist[i] = inf;
+	memset(vis, 0, sizeof vis);
+	queue<int>Q;
+	Q.push(1); vis[1] = 1; dist[1] = 0;
+	while (!Q.empty())
+	{
+		int u = Q.front(); Q.pop(); vis[u] =0;
+		for (int i = head[u]; i != -1; i = e[i].next)
+		{
+			int v = e[i].to;
+			if (dist[v] > dist[u] + e[i].v)
+			{
+				dist[v] = dist[u] + e[i].v;
+				if (!vis[v])
+				{
+					vis[v] = true;
+					Q.push(v);
+				}
+			}
+		}
+	}
+	return dist[n];
+}
+bool cmp1(node a, node b) { return a.x < b.x; }
+bool cmp2(node a, node b) { return a.y < b.y; }
+int main()
+{
+	int i, j;
+	while (~scanf("%d",&n))
+	{
+		for (i = 0; i < n; i++)scanf("%d%d", &N[i].x, &N[i].y), N[i].id = i + 1;
+		memset(head, -1, sizeof head);
+		edgenum = 0;
+		sort(N, N + n, cmp1);
+		for (i = 1; i < n; i++)
+		{
+			addedge(N[i].id, N[i - 1].id, N[i].x - N[i - 1].x);
+			addedge(N[i-1].id, N[i].id, N[i].x - N[i - 1].x);
+		}
+		sort(N, N + n, cmp2);
+		for (i = 1; i < n; i++)
+		{
+			addedge(N[i].id, N[i - 1].id, N[i].y - N[i - 1].y);
+			addedge(N[i-1].id, N[i].id, N[i].y - N[i - 1].y);
+		}
+		spfa();
+		printf("%d\n", dist[n]);
+	}
+	return 0;
+}

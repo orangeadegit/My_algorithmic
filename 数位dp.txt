@@ -1,0 +1,65 @@
+#include<cstdio>
+#include<iostream>
+#include<cmath>
+#include<stack>
+#include<algorithm>
+#include<string>
+#include<cstring>
+#include<vector>
+#include<queue>
+#include <functional>
+#include<map>
+#include<iomanip>
+#include<set>
+#include <utility>
+#include<queue>
+#include<bitset>
+#include <numeric>
+#define ll long long
+#define maxn 100001
+#define lson l , m , rt << 1
+#define rson m + 1 , r , rt << 1 | 1
+const int mod = 1000000007;
+const double pi = acos(-1);
+const double eps = 1e-9;
+const int inf = 1000000000;
+using namespace std;
+int DP[21][10], DIG[10],t,x,cnt;
+
+int    dfs(int pos, int pre, int limit)
+{
+	if (pos < 1)
+		if(!limit)return 9-pre+1;
+		else return max(DIG[pos] - pre+1,0);
+	if (!limit && DP[pos][pre] != -1)
+		return    DP[pos][pre];
+	int    end = limit ? DIG[pos] : 9;
+	int    ret = 0;
+	for (int i = 0; i <= end; i++)
+		if(i>=pre)
+		ret += dfs(pos - 1, i,  limit && (i == end));
+	if (!limit)
+		DP[pos][pre] = ret;
+	return    ret;
+}
+int main()
+{
+	scanf("%d", &t);
+	while (t--)
+	{
+		memset(DP, -1, sizeof(DP));
+		cnt = 0;
+		scanf("%d", &x);
+		while (x)
+		{
+			DIG[cnt++] = x % 10;
+			x /= 10;
+		}
+		printf("%d\n", dfs(cnt - 1, 0, 1)-1);
+	}
+	return 0;
+
+
+
+
+}

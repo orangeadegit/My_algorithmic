@@ -1,0 +1,69 @@
+#include<cstdio>
+#include<iostream>
+#include<cmath>
+#include<stack>
+#include<algorithm>
+#include<string>
+#include<cstring>
+#include<vector>
+#include<queue>
+#include <functional>
+#include<map>
+#include<iomanip>
+#include<set>
+#include <utility>
+#include<queue>
+#include<bitset>
+#include <numeric>
+#define ll long long
+#define maxn 200001
+#define lson l , m , rt << 1
+#define rson m + 1 , r , rt << 1 | 1
+const int mod = 142857;
+const double pi = acos(-1);
+const double eps = 0.1;
+const int inf = 100000000;
+using namespace std;
+struct MAX_CLIQUE {
+	static const int N = 801;
+	bool G[N][N];
+	int n, Max[N], Alt[N][N], ans;
+	bool DFS(int cur, int tot) {
+		if (!cur) {
+			if (tot>ans) { ans = tot; return 1; }
+			return 0;
+		}
+		for (int i = 1; i <= cur; i++) {
+			if (cur - i + tot + 1 <= ans)return 0;
+			int u = Alt[tot][i], nxt = 0;
+			if (Max[u] + tot <= ans)return 0;
+			for (int j = i + 1; j <= cur; j++)
+				if (G[u][Alt[tot][j]])Alt[tot + 1][++nxt] = Alt[tot][j];
+			if (DFS(nxt, tot + 1))return 1;
+		}
+		return 0;
+	}
+	int MaxClique() {
+		ans = 0, memset(Max, 0, sizeof(Max));
+		for (int i = n; i; i--) {
+			int cur = 0;
+			for (int j = i + 1; j <= n; j++)
+				if (G[i][j])Alt[1][++cur] = j;
+			DFS(cur, 1);
+			Max[i] = ans;
+		}
+		return ans;
+	}
+}Group;
+int main()
+{
+	int m,u,v;
+	scanf("%d%d", &Group.n, &m);
+	for (int i = 1; i <= m; i++)
+	{
+		scanf("%d%d", &u, &v);
+		Group.G[u][v] = Group.G[v][u] = 1;
+	}
+	printf("%d\n", Group.MaxClique());
+	return 0;
+}

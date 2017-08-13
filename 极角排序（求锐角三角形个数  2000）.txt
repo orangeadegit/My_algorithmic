@@ -1,0 +1,93 @@
+#include<iostream>
+#include<cstdio>
+#include<cstring>
+#include<algorithm>
+#include<string>
+#include<vector>
+#include <ctime>
+#include<queue>
+#include<set>
+#include<map>
+#include<stack>
+#include<iomanip>
+#include<cmath>
+#include<bitset>
+#define mst(ss,b) memset((ss),(b),sizeof(ss))
+///#pragma comment(linker, "/STACK:102400000,102400000")
+typedef long long ll;
+typedef long double ld;
+#define INF (1ll<<60)-1
+#define Max 1e9
+using namespace std;
+struct point{
+    ll x,y;
+    point(ll x=0,ll y=0):x(x),y(y){}
+    point operator - (const point &t)const{
+        return point(x-t.x,y-t.y);
+    }
+    ll operator * (const point &t)const{ /// 叉积 : 有向面积
+        return x*t.y-y*t.x;
+    }
+    ll operator ^ (const point &t)const{ /// 点积 : 有向长度
+        return x*t.x+y*t.y;
+    }
+    bool operator < (const point &t)const{ /// 极角排序
+        bool up[2]={0,0};
+        if(y>0 || (y==0 && x>0)) up[0]=1;
+        if(t.y>0 || (t.y==0 && t.x>0)) up[1]=1;
+        if(up[0]^up[1]) return up[0];
+        return (*this)*t ? (*this)*t>0 : ((*this)^(*this))<(t^t);
+    }
+}p[2020],v[4020];
+/*
+三角形总共有C(n,3)个,对应的锐角钝角直角总和为3*C(n,3)
+假设有x个钝角,y个直角  钝角和直角分别对应两个锐角
+那么锐角三角形的数量为：(3*C(n,3)-2*x-x-2*y-y)/3 = C(n,3)-x-y
+统计有多少个钝角和直角!
+*/
+int main(){
+    int n;
+    while(scanf("%d",&n)!=EOF){
+        for(int i=0;i<n;i++) scanf("%I64d%I64d",&p[i].x,&p[i].y);
+        ll ans=1LL*n*(n-1)*(n-2)/6,tmp=0;
+        for(int i=0;i<n;i++){
+            int tot=0;
+            for(int j=0;j<n;j++){
+                if(i==j) continue;
+                v[tot++]=p[j]-p[i]; /// 向量i->j
+            }
+            sort(v,v+tot);
+            for(int j=0;j<tot;j++) v[j+tot]=v[j];
+            ll num=0;
+            for(int j=1;j<tot;j++){
+                if(v[j-1]*v[j]==0 && (v[j-1]^v[j])>0) num++;
+                            ///两条向量共线且同向->三点共线
+                else num=0;
+                tmp+=num;
+            }
+            int p1=0,p2=0;
+            for(int j=0;j<tot;j++){
+                while(p1<=j || (p1<j+tot && v[p1]*v[j]<0 && (v[p1]^v[j])>0)) p1++;/// v[j]左边的锐角个数
+                while(p2<=j || (p2<j+tot && v[p2]*v[j]<0))p2++;/// v[j]左边的锐角+钝角+直角个数
+                ans-=p2-p1;
+            }
+        }
+        printf("%I64d\n",ans-tmp/2);
+    }
+    return 0;
+}
+/*
+3
+1 1
+2 2
+2 3
+3
+1 1
+2 3
+3 2
+4
+1 1
+3 1
+4 1
+2 3
+*/

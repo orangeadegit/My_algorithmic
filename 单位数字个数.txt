@@ -1,0 +1,20 @@
+int getnum(int n, int i) {
+	int res = 0;
+	ll factor = 1;
+	while (n / factor) {
+		int high = (n / factor) / 10;
+		int curr = (n / factor) % 10;
+		int low = n - (n / factor)*factor;
+		if (curr < i) {
+			res =(res + (high)*factor)%1000;
+		}
+		else if (curr == i) {
+			res =( res + (high)*factor + low + 1)%1000;
+		}
+		else if (curr > i) {
+			res = (res + (high + 1)*factor)%1000;
+		}
+		factor = factor * 10;
+	}
+	return res;
+}

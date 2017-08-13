@@ -1,0 +1,135 @@
+#include<cstdio>
+#include<iostream>
+#include<cmath>
+#include<stack>
+#include<algorithm>
+#include<string>
+#include<cstring>
+#include<vector>
+#include<queue>
+#include <functional>
+#include<map>
+#include<iomanip>
+#include<set>
+#include <utility>
+#include<queue>
+#define ll long long
+#define maxn 1000000+10
+const ll mod = 1000000007;
+const double pi = acos(-1);
+const double eps = 1e-9;
+const int inf = 1e9;
+using namespace std;
+struct Trie
+{
+	int next[maxn][26], fail[maxn], end[maxn];
+	int root, L;
+	int newnode()
+	{
+		for (int i = 0; i < 26; i++)next[L][i] = -1;
+		end[L++] = 0;
+		return L - 1;
+	}
+	void init()
+	{
+		L = 0;
+		root = newnode();
+	}
+	void insert(char buf[])
+	{
+		int len = strlen(buf);
+		int now = root;
+		for(int i=0;i<len;i++)
+		{
+			if (next[now][buf[i] - 'a'] == -1)
+				next[now][buf[i] - 'a'] = newnode();
+			now = next[now][buf[i] - 'a'];
+		}
+		end[now]++;
+	}
+	void build()
+	{
+		queue<int>Q;
+		fail[root] = root;
+		for (int i = 0; i < 26; i++)  
+			if (next[root][i] == -1)   next[root][i] = root;
+			else { fail[next[root][i]] = root;     Q.push(next[root][i]); }
+			while (!Q.empty())
+			{
+				int now = Q.front();
+				Q.pop();
+				for (int i = 0; i < 26; i++)
+					if (next[now][i] == -1)
+						next[now][i] = next[fail[now]][i];
+					else
+					{
+						fail[next[now][i]] = next[fail[now]][i];
+						Q.push(next[now][i]);
+					}
+			}
+	}
+	int query(char buf[])
+	{
+		int len = strlen(buf);
+		int now = root;
+		int res = 0;
+		for(int i=0;i<len;i++)
+		{
+			now = next[now][buf[i] - 'a'];
+			int temp = now;
+			while (temp != root)
+			{
+				res += end[temp];
+				end[temp] = 0;
+				temp = fail[temp];
+			}
+		}
+		return res;
+	}
+/*int query(char buf[])
+	{
+		int len = strlen(buf);
+		int now = root;
+		for(int i=0;i<len;i++)
+		{
+			now = next[now][buf[i] - 'a'];
+			if (w[now] > 0)return 1;
+		}
+		return 0;
+	}*/
+	void debug()
+	{
+		for (int i = 0; i < L; i++)
+		{
+			printf("id = %3d,fail = %3d,end = %3d,chi = [", i, fail[i], end[i]);
+			for (int j = 0; j < 26; j++)
+				printf("%2d", next[i][j]);
+			printf("]\n");
+		}
+	}
+};
+char buf[maxn];
+Trie ac;
+int main()
+{
+	int n,ans,t;
+	scanf("%d", &t);
+	while (t--)
+	{
+		scanf("%d", &n);
+		ac.init();
+		for (int i = 0; i<n; i++)
+		{
+			scanf("%s", buf);
+			ac.insert(buf);
+		}
+		ac.build();
+		scanf("%s", buf);
+		ans = ac.query(buf);
+		printf("%d\n", ans);
+		/*if (ans> 0)printf("YES\n");
+		else printf("NO\n");*/
+	}
+	//system("pause");
+	return 0;
+}

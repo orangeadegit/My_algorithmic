@@ -1,0 +1,88 @@
+#include<cstdio>
+#include<iostream>
+#include<cmath>
+#include<stack>
+#include<algorithm>
+#include<string>
+#include<cstring>
+#include<vector>
+#include<queue>
+#include <functional>
+#include<map>
+#include<iomanip>
+#include<set>
+#include <utility>
+#define ll long long
+#define maxn 2000000+10
+const ll mod =1000000007ll;
+const double pi = acos(-1);
+const double eps = 1e-9;
+const int inf = 1e9;
+using namespace std;
+ll base[19],a,b,k,bt,yy,bit[20];
+struct node
+{
+	ll s, n;
+};
+node dp[20][400];
+node dfs(ll pos,ll tar,ll lim)
+{
+	node t;
+	t.s = t.n = 0;
+	if(pos==0)
+	{
+		if (tar == 100)
+			t.n = 1;
+		return t;
+	}
+	if (lim == 0 && dp[pos][tar].s!= -1)return dp[pos][tar];
+	ll r = lim ? bit[pos] : 9;
+	ll sgn = (yy - pos) % 2 ? -1 : 1;
+	ll l = pos == yy ? 1 : 0;
+	for(int i=l;i<=r;i++)
+	{
+		node tmp = dfs(pos - 1,tar - i*sgn, lim == 1 && i == bit[pos]);
+		if(tmp.n>0)
+		{
+			t.n += tmp.n;
+			long long q;
+			q = ((((tmp.n%mod)*base[pos]) % mod)*i) % mod;
+			t.s += (tmp.s) % mod;
+			t.s %= mod;
+			t.s += q;
+			t.s %= mod;
+		}
+	}
+	if (lim== 0) dp[pos][tar] = t;
+	return t;
+}
+ll get(ll x,ll y )
+{
+	ll ans = 0;
+	if (x <= 0)return 0;
+	bt = 0;
+	while (x)
+	{
+		bt++;
+		bit[bt] = x % 10;
+		x /= 10;
+	}
+	for(yy=1;yy<=bt;yy++)
+	{
+		memset(dp, -1, sizeof(dp));
+		ans += dfs(yy, y + 100, yy == bt).s;
+		ans = ans%mod;
+	}
+	return ans;
+}
+int main()
+{
+	base[1] = 1;
+	for (int i = 2; i <=19; i++)base[i] = base[i - 1] * 10%mod;
+	while(~scanf("%lld%lld%lld",&a,&b,&k))
+	{
+		printf("%lld\n", (get(b, k) - get(a - 1, k) + mod) % mod);
+	}
+	system("pause");
+	return 0;
+}

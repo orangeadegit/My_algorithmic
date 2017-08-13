@@ -1,0 +1,13 @@
+int l, r, mid, ans = 0;
+l = From, r = To;
+while(1) {
+    if(r-l<=3) {
+        for (int i=l; i<=r; ++i) 
+            if(check(i)) { ans = i; break; }
+        break;
+    }
+    mid = l+r>>1;
+    if(check(mid)) l = mid;
+    else r = mid;
+}
+Answer = ans;

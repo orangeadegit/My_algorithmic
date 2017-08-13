@@ -1,0 +1,10 @@
+def add(a,b):
+    return a+b
+
+count = int(input())
+for i in range(count):
+    line = str(input())
+    print eval(line)
+
+arr = [int(i) for i in input().split()]
+a,b=map(int,input().split())

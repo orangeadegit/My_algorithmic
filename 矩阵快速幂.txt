@@ -1,0 +1,66 @@
+struct Matrix {
+	int n; double a[maxn][maxn];
+	Matrix(int in = 0, int f = 0) {
+		n = in; for (int i = 0; i <= n; i++) for (int j = 0; j <= n; j++) a[i][j] = 0;
+		if (f == 1) for (int i = 0; i <= n; i++) a[i][i] = 1;
+	}
+	double *operator [](int x) {
+		return a[x];
+	}
+	friend Matrix operator * (Matrix &A, Matrix &B) {
+		int n = A.n; Matrix ret(n);
+		for (int i = 0; i <= n; i++)
+			for (int j = 0; j <= n; j++)
+				for (int k = 0; k <= n; k++)
+					ret[i][j] += A[i][k] * B[k][j];
+		return ret;
+	}
+	friend Matrix Pow(Matrix &A, int b) {
+		Matrix ret(A.n, 1);
+		for (; b; b >>= 1, A = A*A)
+			if (b & 1)
+				ret = ret*A;
+		return ret;
+	}
+}A;
+
+µÚ¶þÖÖ£º
+typedef struct
+{
+	ll m[2][2];
+}Matrix;
+Matrix per = { 1,0,0,1 };
+Matrix a = { 1,1,1,0 };
+Matrix multi(Matrix a, Matrix b, ll MOD)
+{
+	Matrix c;
+	ll i, j;
+	for (i = 0; i<2; i++)
+	{
+		for (j = 0; j<2; j++)
+		{
+			c.m[i][j] = 0;
+			for (k = 0; k<2; k++)
+			{
+				c.m[i][j] += a.m[i][k] * b.m[k][j];
+				c.m[i][j] %= MOD;
+			}
+		}
+	}
+	return c;
+}
+Matrix matrix_mod(ll k, ll MOD)
+{
+	Matrix p = a, ans = per;
+	while (k)
+	{
+		if (k & 1)
+		{
+			ans = multi(ans, p, MOD);
+			k--;
+		}
+		k >>= 1;
+		p = multi(p, p, MOD);
+	}
+	return ans;
+}

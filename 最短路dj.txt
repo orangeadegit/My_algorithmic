@@ -1,0 +1,123 @@
+#include<bits/stdc++.h>
+#define fi first
+#define se second
+#define ps push_back
+#define mr make_pair
+using namespace std;
+typedef unsigned long long ll;
+//typedef unsigned long long ULL;
+const ll maxn = 1000 + 10;
+const int INF = 0x3f3f3f3f;
+const double eps = 1e-10;
+const double pi = acos(-1.0);
+int g[maxn][maxn];
+struct haha{
+	int x,y,w;
+}p[maxn*10],p0[maxn*10];
+struct Edge{
+    int from,to,dist;
+};
+struct HeapNode{
+    int d,u;
+    bool operator < (const HeapNode& rhs)const {
+        return d > rhs.d;
+    }
+};
+struct Dijkstra{
+    int n,m;
+    vector<Edge> edges;
+    vector<int> G[maxn];
+    bool done[maxn];
+    int d[maxn];
+    int p[maxn];
+
+    void init(int n){
+        this->n = n;
+        for (int i = 0; i < n; ++i) G[i].clear();
+        edges.clear();
+    }
+    void AddEdge(int from,int to,int dist){
+        edges.push_back((Edge){from,to,dist});
+        m = edges.size();
+        G[from].push_back(m-1);
+    }
+    void dijkstra(int s){
+        priority_queue<HeapNode>Q;
+		p[s] = -1;
+        for (int i = 0; i < n; ++i) d[i] = INF;
+        d[s] = 0;
+        memset(done,0,sizeof done);
+        Q.push((HeapNode){0,s});
+        while(!Q.empty()){
+            HeapNode x = Q.top(); Q.pop();
+            int u = x.u;
+            if (done[u]) continue;
+            done[u] = true;
+            for (int i = 0; i < G[u].size(); ++i){
+                Edge & e = edges[G[u][i]];
+                if (d[e.to] > d[u] + e.dist){
+                    d[e.to] = d[u] + e.dist;
+                    p[e.to] = e.from;
+                    Q.push((HeapNode){d[e.to],e.to});
+                }
+
+            }
+
+        }
+    }
+}dij;
+
+int main(){
+	int n,m,L,s,t;
+	int cnt = 0,cnt2 = 0;
+	scanf("%d %d %d %d %d",&n,&m, &L, &s, &t);
+	dij.init(n);
+	for (int i = 0; i < m; ++i){
+		int u,v,w;
+		scanf("%d %d %d",&u,&v, &w);
+		if (w){
+			p[cnt].x = u;
+			p[cnt].w = w;
+			p[cnt++].y = v;
+			dij.AddEdge(u,v,w);
+			dij.AddEdge(v,u,w);
+		}
+		else {
+			p0[cnt2].x = u;
+			p0[cnt2].w = 0;
+			p0[cnt2++].y = v;
+		}
+	}
+	dij.dijkstra(s);
+	//printf("dt = %d\n",dij.d[t]);
+	if (dij.d[t] < L) return 0 * puts("NO");
+	if (dij.d[t] == L){
+		puts("YES");
+		for (int i = 0; i < cnt; ++i){
+			printf("%d %d %d\n",p[i].x,p[i].y,p[i].w);
+		}
+		for (int i = 0; i < cnt2; ++i){
+			printf("%d %d %d\n",p0[i].x,p0[i].y,INF);
+		}
+		return 0;
+	}
+	int pos = -1;
+	for (int i = 0; i < cnt2; ++i){
+		dij.AddEdge(p0[i].x,p0[i].y,1);
+		dij.AddEdge(p0[i].y,p0[i].x,1);
+		dij.dijkstra(s);
+		if (dij.d[t] > L)continue;
+		pos = i;
+		break;
+	}
+	//printf("pos = %d\n",pos);
+	if (pos == -1)return 0 * puts("NO");
+	puts("YES");
+	for (int i = 0; i < cnt; ++i){
+		printf("%d %d %d\n",p[i].x,p[i].y,p[i].w);
+	}
+	for (int i = 0; i < pos; ++i)printf("%d %d %d\n",p0[i].x,p0[i].y,1);
+	printf("%d %d %d\n",p0[pos].x,p0[pos].y,L-dij.d[t] + 1);
+	for (int i = pos+1; i < cnt2; ++i)printf("%d %d %d\n",p0[i].x,p0[i].y,INF);
+	return 0;
+}
